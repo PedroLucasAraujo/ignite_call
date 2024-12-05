@@ -15,9 +15,7 @@ export const Form = styled(Box, {
 export const FormAnnotation = styled("div", {
   marginTop: "$2",
 
-  [`> ${Box}`]: {
-    display: "flex",
-    alignItems: "center",
-    gap: "$1",
+  [`> ${Text}`]: {
+    color: "$gray400",
   },
 });
