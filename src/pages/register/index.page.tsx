@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Container, Form, FormError, Header } from "./styles";
+import { api } from "../lib/axios";
 
 const registerFormSchema = z.object({
   username: z
@@ -41,8 +42,17 @@ export default function Register() {
     }
   }, [router.query?.username, setValue]);
 
-  function handleRegister(data: RegisterFormData) {
+  async function handleRegister(data: RegisterFormData) {
     console.log(data);
+
+    try {
+      await api.post("/users", {
+        name: data.name,
+        username: data.username,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
