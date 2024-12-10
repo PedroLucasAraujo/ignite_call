@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Container, Form, FormError, Header } from "./styles";
-import { api } from "../lib/axios";
+import { api } from "../../lib/axios";
 import { AxiosError } from "axios";
 
 const registerFormSchema = z.object({
