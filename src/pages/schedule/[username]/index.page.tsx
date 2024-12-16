@@ -1,7 +1,8 @@
 import { Avatar, Heading, Text } from "@ignite-ui/react";
-import { Container, UserHeader } from "./styles";
-import type { GetStaticPaths, GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { prisma } from "../../../lib/prisma";
+import { ScheduleForm } from "./ScheduleForm";
+import { Container, UserHeader } from "./styles";
 
 interface ScheduleProps {
   user: {
@@ -19,16 +20,19 @@ export default function Schedule({ user }: ScheduleProps) {
         <Heading>{user.name}</Heading>
         <Text>{user.bio}</Text>
       </UserHeader>
+
+      <ScheduleForm />
     </Container>
   );
 }
 
-export const getStaticPaths: GetStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [],
     fallback: "blocking",
   };
 };
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const username = String(params?.username);
 
@@ -39,7 +43,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   });
 
   if (!user) {
-    return { notFound: true };
+    return {
+      notFound: true,
+    };
   }
 
   return {
