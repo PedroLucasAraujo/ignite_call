@@ -8,7 +8,7 @@ export function PrismaAdapter(
   res: NextApiResponse | NextPageContext['res'],
 ): Adapter {
   return {
-    async createUser(user) {
+    async createUser(user: any) {
       const { '@ignitecall:userId': userIdOnCookies } = parseCookies({ req })
 
       if (!userIdOnCookies) {
@@ -40,7 +40,7 @@ export function PrismaAdapter(
       }
     },
 
-    async getUser(id) {
+    async getUser(id: string) {
       const user = await prisma.user.findUnique({
         where: {
           id,
@@ -131,7 +131,7 @@ export function PrismaAdapter(
       }
     },
 
-    async linkAccount(account) {
+    async linkAccount(account: any) {
       await prisma.account.create({
         data: {
           user_id: account.userId,
