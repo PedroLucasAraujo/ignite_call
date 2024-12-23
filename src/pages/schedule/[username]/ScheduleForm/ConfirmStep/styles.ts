@@ -37,13 +37,12 @@ export const FormHeader = styled("div", {
 });
 
 export const FormError = styled(Text, {
-  color: "#f75a68",
+  color: "#F75A68",
 });
 
 export const FormActions = styled("div", {
   display: "flex",
   justifyContent: "flex-end",
   gap: "$2",
-
   marginTop: "$2",
 });

@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
+import { google } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { prisma } from "../../../../lib/prisma";
 import { getGoogleOAuthToken } from "../../../../lib/google";
-import { google } from "googleapis";
+import { prisma } from "../../../../lib/prisma";
 
 export default async function handler(
   req: NextApiRequest,

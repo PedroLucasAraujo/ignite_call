@@ -6,7 +6,7 @@ export const Container = styled("div", {
   margin: "$20 auto $4",
 });
 
-export const UserHeader = styled("header", {
+export const UserHeader = styled("div", {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",

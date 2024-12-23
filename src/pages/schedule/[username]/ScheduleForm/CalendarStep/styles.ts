@@ -11,7 +11,9 @@ export const Container = styled(Box, {
       true: {
         gridTemplateColumns: "1fr 280px",
 
-        "@media (max-width: 900px)": { gridTemplateColumns: "1fr" },
+        "@media(max-width: 900px)": {
+          gridTemplateColumns: "1fr",
+        },
       },
       false: {
         width: 540,
@@ -47,7 +49,9 @@ export const TimePickerList = styled("div", {
   gridTemplateColumns: "1fr",
   gap: "$2",
 
-  "@media (max-width: 900px)": {},
+  "@media (max-width: 900px)": {
+    gridTemplateColumns: "2fr",
+  },
 });
 
 export const TimePickerItem = styled("button", {
