@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --fix"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.10",
@@ -20,10 +20,10 @@
     "dayjs": "^1.11.7",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
-    "googleapis": "^144.0.0",
+    "googleapis": "^109.0.1",
     "next": "13.0.6",
     "next-auth": "^4.18.6",
-    "next-seo": "^6.6.0",
+    "next-seo": "^5.15.0",
     "nookies": "^2.5.2",
     "phosphor-react": "^1.4.1",
     "react": "18.2.0",
