@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// import dayjs from 'dayjs'
+import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../lib/prisma";
-import dayjs from "dayjs";
 
-export default async function handle(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -11,11 +11,10 @@ export default async function handle(
   }
 
   const username = String(req.query.username);
-
   const { year, month } = req.query;
 
   if (!year || !month) {
-    return res.status(400).json({ message: "Year or Month not specified." });
+    return res.status(400).json({ message: "Year or month not specified." });
   }
 
   const user = await prisma.user.findUnique({

@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse, type NextPageContext } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { z } from "zod";
 import { prisma } from "../../../lib/prisma";
@@ -9,8 +9,8 @@ const updateProfileBodySchema = z.object({
 });
 
 export default async function handler(
-  req: NextApiRequest | NextPageContext["req"],
-  res: NextApiResponse | NextPageContext["res"]
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
   if (req.method !== "PUT") {
     return res.status(405).end();
@@ -30,7 +30,7 @@ export default async function handler(
 
   await prisma.user.update({
     where: {
-      id: session.user?.id,
+      id: session.user.id,
     },
     data: {
       bio,

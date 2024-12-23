@@ -13,10 +13,11 @@ import { useSession } from "next-auth/react";
 import { ArrowRight } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { buildNextAuthOptions } from "../../api/auth/[...nextAuth].api";
+import { buildNextAuthOptions } from "../../api/auth/[...nextauth].api";
 import { Container, Header } from "../styles";
 import { FormAnnotation, ProfileBox } from "./styles";
 import { api } from "../../../lib/axios";
+import { useRouter } from "next/router";
 
 const updateProfileSchema = z.object({
   bio: z.string(),

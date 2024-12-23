@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../../../lib/prisma";
 import dayjs from "dayjs";
+import { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "../../../../lib/prisma";
 
-export default async function handle(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -11,11 +11,10 @@ export default async function handle(
   }
 
   const username = String(req.query.username);
-
   const { date } = req.query;
 
   if (!date) {
-    return res.status(400).json({ message: "Date not provided." });
+    return res.status(400).json({ message: "Date no provided." });
   }
 
   const user = await prisma.user.findUnique({
@@ -32,15 +31,18 @@ export default async function handle(
   const isPastDate = referenceDate.endOf("day").isBefore(new Date());
 
   if (isPastDate) {
-    return res.json({ possibleTimes: [], availability: [] });
+    return res.json({ possibleTimes: [], availableTimes: [] });
   }
 
   const userAvailability = await prisma.userTimeInterval.findFirst({
-    where: { user_id: user.id, week_day: referenceDate.get("day") },
+    where: {
+      user_id: user.id,
+      week_day: referenceDate.get("day"),
+    },
   });
 
   if (!userAvailability) {
-    return res.json({ possibleTimes: [], availability: [] });
+    return res.json({ possibleTimes: [], availableTimes: [] });
   }
 
   const { time_start_in_minutes, time_end_in_minutes } = userAvailability;
@@ -48,11 +50,11 @@ export default async function handle(
   const startHour = time_start_in_minutes / 60;
   const endHour = time_end_in_minutes / 60;
 
-  const possibletimes = Array.from({
-    length: endHour - startHour,
-  }).map((_, index) => {
-    return startHour + index;
-  });
+  const possibleTimes = Array.from({ length: endHour - startHour }).map(
+    (_, i) => {
+      return startHour + i;
+    }
+  );
 
   const blockedTimes = await prisma.scheduling.findMany({
     select: {
@@ -67,11 +69,11 @@ export default async function handle(
     },
   });
 
-  const availableTimes = possibletimes.filter((time) => {
+  const availableTimes = possibleTimes.filter((time) => {
     return !blockedTimes.some(
-      (blockedTimes) => blockedTimes.date.getHours() === time
+      (blockedTime) => blockedTime.date.getHours() === time
     );
   });
 
-  return res.json({ possibletimes, availableTimes });
+  return res.json({ possibleTimes, availableTimes });
 }
