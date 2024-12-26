@@ -7,9 +7,12 @@ import {
   Text,
   TextInput,
 } from '@ignite-ui/react'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { api } from '../../../lib/axios'
 import { convertTimeStringToMinutes } from '../../../utils/convert-time-string-to-minutes'
 import { getWeekDays } from '../../../utils/get-week-days'
 import { Container, Header } from '../styles'
@@ -17,14 +20,11 @@ import { Container, Header } from '../styles'
 import {
   FormError,
   IntervalBox,
-  IntervalsContainer,
+  IntervalContainer,
   IntervalDay,
   IntervalInputs,
   IntervalItem,
 } from './styles'
-import { api } from '../../../lib/axios'
-import { useRouter } from 'next/router'
-import { NextSeo } from 'next-seo'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -90,6 +90,7 @@ export default function TimeIntervals() {
   })
 
   const router = useRouter()
+
   const weekDays = getWeekDays()
 
   const { fields } = useFieldArray({
@@ -106,12 +107,13 @@ export default function TimeIntervals() {
       intervals,
     })
 
-    await router.push(`/register/update-profile`)
+    await router.push('/register/update-profile')
   }
 
   return (
     <>
       <NextSeo title="Selecione sua disponibilidade | Ignite Call" noindex />
+
       <Container>
         <Header>
           <Heading as="strong">Quase lá</Heading>
@@ -124,7 +126,7 @@ export default function TimeIntervals() {
         </Header>
 
         <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
-          <IntervalsContainer>
+          <IntervalContainer>
             {fields.map((field, index) => {
               return (
                 <IntervalItem key={field.id}>
@@ -164,7 +166,7 @@ export default function TimeIntervals() {
                 </IntervalItem>
               )
             })}
-          </IntervalsContainer>
+          </IntervalContainer>
 
           {errors.intervals && (
             <FormError size="sm">{errors.intervals.message}</FormError>
