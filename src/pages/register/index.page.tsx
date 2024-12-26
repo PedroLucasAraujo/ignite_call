@@ -1,55 +1,72 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Avatar,
-  Button,
-  Heading,
-  MultiStep,
-  Text,
-  TextArea,
-} from '@ignite-ui/react'
-import { GetServerSideProps } from 'next'
-import { unstable_getServerSession } from 'next-auth'
-import { useSession } from 'next-auth/react'
-import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ArrowRight } from 'phosphor-react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { api } from '../../../lib/axios'
-import { buildNextAuthOptions } from '../../api/auth/[...nextAuth].api'
-import { Container, Header } from '../styles'
-import { FormAnnotation, ProfileBox } from './styles'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
+import { useRouter } from "next/router";
+import { ArrowRight } from "phosphor-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const updateProfileSchema = z.object({
-  bio: z.string(),
-})
+import { Container, Form, FormError, Header } from "./styles";
+import { api } from "../../lib/axios";
+import { AxiosError } from "axios";
+import { NextSeo } from "next-seo";
 
-type UpdateProfileData = z.infer<typeof updateProfileSchema>
+const registerFormSchema = z.object({
+  username: z
+    .string()
+    .min(3, { message: "O usuário precisa ter pelo menos 3 letras." })
+    .regex(/^([a-z\\-]+)$/i, {
+      message: "O usuário pode ter apenas letras e hifens.",
+    })
+    .transform((username) => username.toLowerCase()),
+  name: z
+    .string()
+    .min(3, { message: "O nome precisa ter pelo menos 3 letras." }),
+});
 
-export default function UpdateProfile() {
+type RegisterFormData = z.infer<typeof registerFormSchema>;
+
+export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<UpdateProfileData>({
-    resolver: zodResolver(updateProfileSchema),
-  })
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
+  });
 
-  const session = useSession()
-  const router = useRouter()
+  const router = useRouter();
 
-  async function handleUpdateProfile(data: UpdateProfileData) {
-    await api.put('/users/profile', {
-      bio: data.bio,
-    })
+  useEffect(() => {
+    if (router.query.username) {
+      setValue("username", String(router.query.username));
+    }
+  }, [router.query?.username, setValue]);
 
-    await router.push(`/schedule/${session.data?.user.username}`)
+  async function handleRegister(data: RegisterFormData) {
+    console.log(data);
+
+    try {
+      await api.post("/users", {
+        name: data.name,
+        username: data.username,
+      });
+
+      await router.push(`/register/connect-calendar`);
+    } catch (err) {
+      if (err instanceof AxiosError && err?.response?.data?.message) {
+        alert(err.response.data.message);
+        return;
+      }
+
+      console.error(err);
+    }
   }
 
   return (
     <>
-      <NextSeo title="Atualize seu perfil | Ignite Call" noindex />
-
+      <NextSeo title="Crie uma conta | Ignite Call" />
       <Container>
         <Header>
           <Heading as="strong">Bem-vindo ao Ignite Call!</Heading>
@@ -58,47 +75,38 @@ export default function UpdateProfile() {
             pode editar essas informações depois.
           </Text>
 
-          <MultiStep size={4} currentStep={4} />
+          <MultiStep size={4} currentStep={1} />
         </Header>
 
-        <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
+        <Form as="form" onSubmit={handleSubmit(handleRegister)}>
           <label>
-            <Text>Foto de perfil</Text>
-            <Avatar
-              src={session.data?.user.avatar_url}
-              referrerPolicy="no-referrer"
-              alt={session.data?.user.name}
+            <Text size="sm">Nome de usuário</Text>
+            <TextInput
+              prefix="ignite.com/"
+              placeholder="seu-usuário"
+              {...register("username")}
             />
+
+            {errors.username && (
+              <FormError size="sm">{errors.username.message}</FormError>
+            )}
           </label>
 
           <label>
-            <Text size="sm">Sobre você</Text>
-            <TextArea {...register('bio')} />
-            <FormAnnotation size="sm">
-              Fale um pouco sobre você. Isto será exibido em sua página pessoal.
-            </FormAnnotation>
+            <Text size="sm">Nome completo</Text>
+            <TextInput placeholder="Seu nome" {...register("name")} />
+
+            {errors.name && (
+              <FormError size="sm">{errors.name.message}</FormError>
+            )}
           </label>
 
           <Button type="submit" disabled={isSubmitting}>
-            Finalizar
+            Próximo passo
             <ArrowRight />
           </Button>
-        </ProfileBox>
+        </Form>
       </Container>
     </>
-  )
-}
-
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const session = await unstable_getServerSession(
-    req,
-    res,
-    buildNextAuthOptions(req, res),
-  )
-
-  return {
-    props: {
-      session,
-    },
-  }
+  );
 }
